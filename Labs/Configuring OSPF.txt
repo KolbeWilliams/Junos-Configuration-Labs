@@ -4,7 +4,8 @@ cli
 configure
 delete routing-options static route 172.16.40.0/24
 delete routing-options rib inet6.0 static route 2001:db8:0:40::/64
-show | compare commit
+show | compare 
+commit
 
 set protcols ospf area 0 interface ge-0/0/5.0
 commit and-quit
