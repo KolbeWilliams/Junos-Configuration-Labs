@@ -1,0 +1,40 @@
+In this lab, I delete static routes and configure the interfaces on a router to use OSPF as well as OSPF3
+
+cli
+configure
+delete routing-options static route 172.16.40.0/24
+delete routing-options rib inet6.0 static route 2001:db8:0:40::/64
+show | compare commit
+
+set protcols ospf area 0 interface ge-0/0/5.0
+commit and-quit
+show ospf neighbor
+show route protocol ospf
+
+show interfaces descriptions
+configure
+set protocols ospf area 0 interfaces ge-0/0/1.0 passive
+set protocols ospf area 0 interfaces ge-0/0/2.0 passive
+set protocols ospf area 0 interfaces ge-0/0/3.0 passive
+show | compare
+commit and-quit
+
+On Second Router:
+
+show route 172.16.10.1
+show route protocol ospf
+
+Back on First Router for OSPF3
+
+configure
+set protocols ospf3 area 0 interface ge-0/0/5.0
+set protocols ospf3 area 0 interface ge-0/0/1.0 passive
+set protocols ospf3 area 0 interface ge-0/0/2.0 passive
+set protocols ospf3 area 0 interface ge-0/0/3.0 passive
+show | compare
+commit and-quit
+show ospf3 neighbor
+show route 2001:db8:0:40::/64
+
+On Second Router:
+show route protocol ospf3

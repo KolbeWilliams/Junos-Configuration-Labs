@@ -1,0 +1,40 @@
+In this lab, I create staic routes from a customer's experimental LAN (172.16.40.0/24 or 2001:db8:0:40::/64)
+on their router and the internal network accessed by a local router. I also create static default doutes. 
+(The link between the routers is ge-0/0/5, the links from the local router to each of the internal LANs are
+ge-0/0/1-3, and the default gateway route on the local router is interface ge-0/0/6)
+
+cli
+configure
+
+For IPV4:
+
+set routing-options static route 172.16.40.0/24 next-hop 10.1.2.2
+show | compare
+commit and-quit
+
+show route 172.16.40.0/24
+ping 172.16.40.1 count 3
+
+configure
+set routing options static route 0/0 next-hop 10.1.254.254
+show | compare
+commit and-quit
+show route 0/0 table inet.0
+show route 0/0 table inet.0 exact
+
+For IPv6:
+
+configure
+set routing-options rib inet6.0 static route 2001:db8:0:40::/64 next-hop 2001:db8:1:2::2
+show | compare
+commit and-quit
+show route 2001:db8:0:40::/64
+ping 2001:db8:0:40::1 count 3
+
+configure
+set routing-options rib inet 6.0 static route ::/0 next-hop 2001:db8:1:254::254
+show | compare
+commit and-quit
+show route 2001:db8:100:200::300
+show route ::/0 table inet6.0 exact
+show route protocol static
