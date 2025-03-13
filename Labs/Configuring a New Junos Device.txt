@@ -1,0 +1,58 @@
+In this lab, I utilized a few of the commands that would be helpful when setting up a new Junos device, such as configuring a new user, manually setting a 
+time (Using an NTP server would be better), configuring login messages and announcements, and creating a rescue configuration.
+
+cli
+
+show interfaces terse fxp0
+show configration interfaces fxp0
+
+show configuration system login user Lab
+
+configure
+set system login user s.parker class read-only
+set system login user s.parker authentication plain-text-password
+lab123
+lab123
+
+show | compare
+commit and-quit
+show configuration system login user s.parker
+
+ssh s.parker@172.25.11.1
+lab123
+
+These commands won't work because I'm logged in as a read-only user:
+show configuration
+configure
+request system reboot
+ping 172.16.10.27
+
+This command will work:
+show system information
+exit
+
+Logged in as a different user:
+show system uptime
+configure
+set system time-zone America/New_York
+show | compare
+commit and-quit
+set date 201007010900
+show system uptime
+set date 202503130242
+
+configure
+set system login message "Welcome to this rputer! Please enter the correct login details below:"
+set system login announcement "You have successfully loggin in!\nPlease don't type any illegal commands.\n"
+show | compare
+commit and-quit
+exit
+ssh lab@172.25.11.1
+lab123
+
+request system configuration rescue save
+delete interfaces ge-0/0/0
+delete protocols
+show | compare
+rollback rescue
+show | compare
