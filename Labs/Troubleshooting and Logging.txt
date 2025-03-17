@@ -1,0 +1,77 @@
+In this lab, I utilized some of the Junos CLI tools that can be used for troubleshooting various issues and to view
+system logs.
+
+On ROUTER_1:
+cli
+
+show configuration system syslog
+show configuration system syslog | display set
+
+show log interactive-commands
+show log interactive-commands | match lab
+show log interactive-commands | match lab | last 15
+show log messages | last 30
+show log messages | match "down|error"
+
+configure
+set system syslog file CONFIG_CHANGES.txt change-log any
+set system syslog file CONFIG_CHANGES.txt archive size 1M files 4 no-world-readable
+show | compare
+commit and-quit
+
+show log CONFIG_CHANGES.txt
+configure
+set system host-name FAKE_HOSTNAME
+run show log CONFIG_CHANGES.txt
+rollback
+commit and-quit
+show log CONFIG_CHANGES.txt
+
+monitor start messages
+
+In a New Window:
+ssh lab@172.25.11.2
+lab123
+configure
+delete protocols ospf
+show | compare
+commit confirmed 1
+run show ospf neighbor
+
+Back on Original Window:
+monitor stop
+
+On ROUTER_2:
+exit
+show ospf neighbor
+ping 10.1.2.1 rapid
+ping 10.1.2.1 rapid count 500
+ping 10.1.2.1 size 1472 do-not-fragment count 1 (The deefault layer 3 MTU is 1500 bytes with an ip header of 20 bytes and an ICMP header of 8 bytes)
+ping 10.1.2.1 size 1473 do-not-fragment count 1
+ping 10.1.2.1 size 1473 count 1
+
+show arp
+ping 172.16.40.27
+show arp
+show ipv6 neighbors
+ping 2001:db8:0:40::27
+show ipv6 neighbors
+
+On ROUTER_2:
+ping 10.1.2.1 rapid count 50000 size 1472
+
+On ROUTER_1:
+monitor interface traffic
+b
+q
+monitor interface ge-0/0/5
+n
+i
+ge-0/0/5
+q
+
+monitor traffic interface ge-0/0/5 no-resolve
+monitor traffic interface ge-0/0/5 no-resolve detail
+
+show log ?
+scp /var/log/CONFIG_CHANGES.txt lab@172.25.11.254:/home/lab/Desktop
