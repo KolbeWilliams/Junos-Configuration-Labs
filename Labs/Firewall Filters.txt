@@ -1,0 +1,81 @@
+In this lab, I configure different firewall filter tearms on ROUTER_1 and test the filters using ROUTER_2.
+
+cli
+configure
+
+edit firewall family inet filter FILTER_FROM_ROUTER_2
+
+set term BLOCK_PING_FROM_40-1 from source-address 172.16.40.1
+set term BLOCK_PING_FROM_40-1 from icmp-type echo-request
+set term BLOCK_PING_FROM_40-1 from icmp-type echo-reply
+set term BLOCK_PING_FROM_40-1 then discard
+
+top
+set interfaces ge-0/0/5 unit 0 family inet filter input FILTER_FROM_ROUTER_2
+show | compare
+commit
+
+SSH to ROUTER_2 to test filter:
+ssh lab@172.25.11.2
+ping 172.16.10.1 source 172.16.40.1 count 3
+ping 172.16.10.1 count 2
+
+Back to ROUTER_1:
+edit firewall family inet filter FILTER_FROM_ROUTER_2
+set term ACCEPT_ALL_FROM_ROUTER_2 from source-address 172.16.40.0/24
+set term ACCEPT_ALL_FROM_ROUTER_2 from source-address 10.1.2.0/24
+set term ACCEPT_ALL_FROM_ROUTER_2 then accept
+
+top
+show | compare
+commit and-quit
+
+Back on ROUTER_2:
+ping 172.16.0.1 count 2
+
+Back on ROUTER_1:
+show ospf neighbor
+configure
+edit firewall family inet filter FILTER_FROM_ROUTER_2
+set term BLOCK_R1-R2_INTERFACE from source-address 10.1.2.2/32
+set term BLOCK_R1-R2_INTERFACE then discard
+show | compare
+insert term BLOCK_R1-R2_INTERFACE before term ACCEPT_ALL_FROM_ROUTER_2
+show | compare
+commit and-quit
+
+show ospf neighbor
+configure
+edit firewall familt inet filter FILTER_FROM_ROUTER_2
+set term BLOCK_R1-R2_INTERFACE from destination-address 10.1.2.1/32
+set term BLOCK_R1-R2_INTERFACE from protocol tcp
+set term BLOCK_R1-R2_INTERFACE from destination-port ssh
+show | compare
+commit
+run show configuration firewall
+
+Back on ROUTER_2:
+ssh lab@10.1.2.1
+ping 10.1.2.1 source 10.1.2.2 count 2
+show ospf neighbor
+
+Back on ROUTER_1:
+set term ACCEPT_ALL_FROM_ROUTER_2 then count COUNT_FINAL_TERM
+top
+show | compare
+commit and-quit
+show firewall counter COUNT_FINAL_TERM filter FILTER_FROM_ROUTER_2
+
+Back on ROUTER_2:
+ping 10.1.2.1 source 10.1.2.2 count 999 rapid size 1472
+
+Back on ROUTER_1:
+show firewall counter COUNT_FINAL_TERM filter FILTER_FROM_ROUTER_2
+
+Delete the filters for ease of use in other labs:
+configure
+show interfaces ge-0/0/5 | display set
+delete interaces ge-0/0/5 unit 0 family inet filter input
+delete firewall
+show | compare
+commit and-quit
