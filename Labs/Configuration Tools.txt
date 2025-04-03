@@ -1,0 +1,108 @@
+In this lab, I practice omiting parts of the configuration on ROUTE_1 and exploring the effects it has, protecting 
+and unprotecting parts of the configuration, annotating the configuration, loading configuration written in a text
+file, and using configuration groups.
+
+cli
+
+show configuration | no-more
+show configuration protocols
+show configuration system login
+
+configure
+set protocols lldp apply-flags omit
+set chassis apply-flags omit
+set system login apply-flags omit
+show | compare
+commit and-quit
+
+show configuration | no-more
+show configuration | display set
+show configuration protocols lldp
+show configuration | display omit
+
+configure
+rollback 1
+show | compare
+commit and-quit
+
+configure
+protect protocols lldp
+show | compare
+commit and-quit
+
+show configuration protocols
+show configuration protocols | disply set
+configure
+delete protocls lldp
+set protocols lldp interface ge-0/0/5
+unprotect protocols lldp
+commit
+delete protocols lldp
+show | compare
+rollback
+
+annotate system "Hello World!"
+show
+edit system
+annotate system login "This is my 2nd annotation"
+top show
+annotate system ""
+edit system
+annotate system login ""
+top
+show
+
+load merge terminal
+<paste new configuration>
+^d
+show | compare
+rollback
+show | compare
+exit
+
+show configuration | save BASE_CONFIG.txt
+file list
+file show BASE_CONFIG.txt
+configure
+delete interfaces ge-0/0/0
+delete interfaces ge-0/0/5
+delete interfaces ge-0/0/6
+delete protocols
+
+show | compare
+commit confirmed 2
+commit and-quit
+
+show configuration
+configure
+load override BASE_CONFIG.txt
+show | compare
+commit and-quit
+show configuration
+
+configure
+load set terminal
+<paste new configuration>
+^d
+show | compare
+rollback
+exit
+
+show configuration system syslog
+configure
+set groups LOG_FILE_SIZE system syslog file <*> archive size 2m files 3
+set apply groups LOG_FILE_SIZE
+show | compare
+commit and-quit
+
+show configuration system syslog | display inheritance
+show configuration system syslog | display inheritance no-comments
+show configuration system syslog
+show configuration system syslog | display set
+show configuration system syslog | display set | display inheritance
+
+configure
+set system syslog file messages apply-groups-except LOG_FILE_SIZE
+show | compare
+commit and-quit
+show configuration system syslog | display inheritance
