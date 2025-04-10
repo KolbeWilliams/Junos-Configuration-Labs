@@ -1,0 +1,64 @@
+In this lab, I use link aggregation to aggregate ports ge-0/0/4 and ge-0/0/5 from ROUTER_1 to ROUTER_2, create a
+loopback interface and enable ospf on the loopback interface, and configure additional IP addresses on an interface
+on ROUTER_1 while exploring which address is chosen ad the source address to various destinations.
+
+cli
+
+show configuration | display set | match ge-0/0/4
+show configuration | display set | match ge-0/0/5
+configure
+
+delete interfaces ge-0/0/5
+delete protocols ospf area 0 interface ge-0/0/5
+delete protocols ospf3 area 0 interface ge-0/0/5
+show | compare
+commit
+
+set chassis aggregated-devices ethernet device-count 1
+set interfaces ge-0/0/4 gigether-options 802.3ad ae0
+set interfaces ge-0/0/5 gigether-options 802.3ad ae0
+set interfaces ae0 aggregated-ether-options lacp active
+set interfaces ae0 description "Connection to ROUTER_2"
+set interfaces ae0 unit 0 family inet address 10.1.2.1/24
+set interfaces ae0 unit 0 family inet6 address 2001:db8:1:2::1/64
+show | compare
+commit
+
+set protocols ospf area 0 interface ae0.0
+set protocols ospf3 area 0 interface ae0.0
+show | compare
+commit and-quit
+ping 20.1.2.2
+show ospf neighbor
+show route protocol ospf table inet.0
+show interfaces terse ae0
+show interfaces terse | match ae0
+
+configure
+set interfaces lo0 unit 0 family inet address 192.168.1.1/32
+set protocols ospf area 0 interface lo0.0
+show | compare
+commit and-quit
+
+Connect to ROUTER_2 to test the loopback interface:
+show route 192.168.1.1
+ping 192.168.1.1 source 172.16.40.1
+
+Back on ROUTER_1:
+show configuration interfaces ge-0/0/0.10
+show configuration interfaces ge-0/0/0.10 | display set
+configure
+set interfaces ge-0/0/0 unit 10 family inet address 172.16.10.99/24
+set interfaces ge-0/0/0 unit 10 family inet address 172.16.250.1/24
+set interfaces ge-0/0/0 unit 10 family inet address 172.16.250.99/24
+show | compare
+commit and-quit
+show configuration interfaces ge-0/0/0.10
+show configuration interfaces ge-0/0/0.10 | display set
+show interfaces ge-0/0/0.10
+configure
+set interfaces ge-0/0/0 unit 10 family inet address 172.16.10.99/24 preferred
+set interfaces ge-0/0/0 unit 10 family inet address 172.16.250.99/24 primary
+show | compare
+commit and-quit
+show interaces ge-0/0/0.10
