@@ -1,6 +1,6 @@
 In this lab, I use link aggregation to aggregate ports ge-0/0/4 and ge-0/0/5 from ROUTER_1 to ROUTER_2, create a
 loopback interface and enable ospf on the loopback interface, and configure additional IP addresses on an interface
-on ROUTER_1 while exploring which address is chosen ad the source address to various destinations.
+on ROUTER_1 while exploring which address is chosen as the source address to various destinations.
 
 cli
 
