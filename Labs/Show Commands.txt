@@ -1,0 +1,8 @@
+In this lab, I experiment with different show commands
+
+cli
+
+show system information
+show system uptime
+show system users
+show lldp neighbors
