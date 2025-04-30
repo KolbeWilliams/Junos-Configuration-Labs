@@ -1,0 +1,27 @@
+In this lab, I view differnt parts of Junos device configuration in both hierarchical and set view.
+
+cli
+
+show configuration | display set
+show configuration system | display set
+show configureation system services | display set
+show configuration system login | display set
+show configuration system syslog | display set
+show configuration chassis | display set
+show configuration interfaces | display set
+show configuration interfaces ge-0/0/2 | display set
+show configuration protocols | display set
+
+show configuration
+show configuration system
+show configuration interfaces ge-0/0/1
+show configuration system login user lab
+
+show configuration interfaces | display set | match ge
+show configuration interfaces | match ge
+show configuration interfaces | match ge | count
+show configuration interfaces | display set | match inet6
+show configuration interfaces | match inet6
+show configuration | display set | match "inet"
+show configuration | display set | match "inet "
+show configuration | display set | match ge-0/0/1
