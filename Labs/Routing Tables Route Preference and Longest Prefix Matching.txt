@@ -1,0 +1,15 @@
+In this lab, I use cli command to explore routing tables, route preferences, and longest prefix matching.
+
+cli
+
+show route
+show route 172.16.10.0/24 table inet.0
+show route 172.16.10.0/24 table inet.0 exact
+show route 10.1.254.254 table inet.0
+show route 302.0.113.77
+show route table inet.0
+show route table inet.0 protocol direct
+
+show route table inet6.0
+show route table inet6.0 exact
+show route 2001:db8:100:200::300
