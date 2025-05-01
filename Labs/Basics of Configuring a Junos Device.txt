@@ -1,0 +1,65 @@
+In this lab, I perform some of the basics of configuring a Junos device.
+
+cli
+configure
+set system host-name ROUTER_1
+show
+show | compare
+rollback
+show | compare
+set system host-name ROUTER_1
+show | compare
+commit
+rollback 1
+show | compare
+rollback
+
+set interfaces ge-0/0/5 unit 0 familt inet address 192.168.1.0/24
+commit check
+rollback
+exit 
+yes
+set cli screen-width 1000
+configure
+set interfaces ge-0/0/5 unit 0 familt inet6 address 2001:db8:1:2::1/64
+set interfaces ge-0/0/5 description "Connection to ROUTER_2"
+show | compare
+commit comment "Added config to interface ge-0/0/5"
+exit
+show interfaces terse ge-0/0/5
+show system commit
+show configuration | compare rollback 2
+
+show interfaces terse ge-0/0/2
+show configuration interfaces ge-0/0/2 | display set
+configure
+set interfaces ge-0/0/2 unit 0 familt inet address 172.16.20.1/24
+show | compare
+delete interfaces ge-0/0/2 unit 0 familt inet address 172.16.200.1/24
+show | compare
+commit comment "Changes IPv4 address on interface ge-0/0/2"
+exit
+show interfaces terse ge-0/0/2
+show configuration | display set| match ge-0/0/5
+configure
+delete interfaces ge-0/0/5 unit 0 family inet6
+show | compare
+delete interfaces ge-0/0/5
+show | compare
+rollback
+exit
+
+configure
+run show configuration | display set | match mtu
+delete interfaces ge-0/0/1 mtu 1800
+delete interfaces ge-0/0/3 unit 0 family inet mtu 1000
+show | compare
+commit confirmed 20
+exit
+show configuration | displat set | match mtu
+configure
+commit and-quit
+show system commit
+configure
+set system host-name FAKE_HOSTNAME
+commit confirmed 1
