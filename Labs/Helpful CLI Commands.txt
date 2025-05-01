@@ -1,0 +1,41 @@
+In this lab, I explore some helpful commands that can be used on a Junos device.
+
+cli
+
+configure exclusive
+set interfaces ge-0/0/3 disable
+show | compare
+commit
+run show interfaces terse ge-0/0/3
+delete interfaces ge-0/0/3 disable
+show | compare
+commit
+run show interfaces terse ge-0/0/3
+deactivate interfaces ge-0/0/3
+show | compare
+commit
+run show interfaces terse ge-0/0/3
+activate interfaces ge-0/0/3
+show | compare
+commit
+run show interfaces terse ge-0/0/3
+
+edi interfaces ge-0/0/5 unit 0
+set family inet address 10.1.2.1/24
+up
+top
+show | compare
+commit
+exit
+
+show interfaces terse ge-0/0/3
+configure
+edit interfaces ge-0/0/3 unit 0 family inet
+rename address 172.16.33.1/24 to address 172.16.30.1/24
+up
+edit family inet 6
+set address 2001:db8:0:30::1/64
+top
+show | compare
+commit and-quit
+show interfaces terse ge-0/0/3
